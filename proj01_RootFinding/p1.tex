@@ -1,0 +1,61 @@
+% Limpeza do workspace
+clear all
+clc
+
+% Atribui\c{c}\~{a}o das constantes
+EPSILON = 1e-12	% Erro aceit\'{a}vel
+ALPHA = 0.2	% Constante da equa\c{c}\~{a}o
+BETA = 2	% Constante da equa\c{c}\~{a}o
+
+% Estabelecimento do intervalo em que a raiz se encontra
+x = -5:0.01:5	% Intervalo de x para investiga\c{c}\~{a}o da curva
+y = exp(ALPHA*x) - exp((ALPHA-1)*x) - BETA	% Atribuicao de x na equa\c{c}\~{a}o -> f(x) = y
+plot(x,y)
+
+% M\'{e}todo da Bissec\c{c}\~{a}o
+a = 3	% Valor m\'{i}nimo do intervalo
+b = 4	% Valor m\'{a}ximo do intervalo
+[x_bissec, n_bissec] = bissecBV(a,b, ALPHA, BETA, EPSILON)
+
+% M\'{e}todo de Newton
+x_newt = (3+4)/2
+n_max = 10
+[x_newt, n_newt] = newtonBV(x_newt, ALPHA, BETA, EPSILON, n_max)
+
+% Implementa\c{c}\~{a}o das fun\c{c}\~{o}es de resolu\c{c}\~{a}o
+
+% M\'{e}todo da Bissec\c{c}\~{a}o
+function [r, n] = bissecBV(a, b, ALPHA, BETA, EPSILON)
+	n = 0	% N\'{u}mero de itera\c{c}\~{o}es
+	n_max = ceil((log10(b-a)-log10(EPSILON))/(log10(2)))	% N\'{u}mero m\'{a}ximo de itera\c{c}\~{o}es
+
+	while b - a >= EPSILON & n < n_max
+
+		y_k = exp(ALPHA*((a+b)/2)) - exp((ALPHA-1)*((a+b)/2)) - BETA
+
+		if y_k > 0
+			b = (a+b)/2
+			n = n + 1
+		elseif y_k < 0
+			a = (a+b)/2
+			n = n + 1
+		else
+			break
+		end
+
+	end
+	r = (a+b)/2
+end
+
+% M\'{e}todo de Newton
+function [r, n] = newtonBV(x0, ALPHA, BETA, EPSILON, n_max)
+	n = 0
+
+	while abs(exp(ALPHA*x0) - exp((ALPHA-1)*x0) - BETA) >= EPSILON & n < n_max
+
+		x0 = x0 - (exp(ALPHA*x0) - exp((ALPHA-1)*x0) - BETA)/(exp((ALPHA-1)*x0)*(ALPHA*(exp(x0)-1)+1))
+		n = n + 1
+
+	end
+	r = x0
+end
